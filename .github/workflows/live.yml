@@ -1,0 +1,25 @@
+name: 24/7 YouTube Live
+
+on:
+  workflow_dispatch:   # ম্যানুয়ালি চালানোর জন্য
+  schedule:
+    - cron: '*/30 * * * *' # প্রতি 30 মিনিটে workflow trigger হবে (optional)
+
+jobs:
+  livestream:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Setup FFmpeg
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg
+
+      - name: Start YouTube Live
+        env:
+          YT_KEY: ${{berz-aujw-uzbs-v8zt-1m34}}   # আপনার YouTube Stream Key
+        run: |
+          ffmpeg -re -stream_loop -1 -i "./live.mp4" \
+          -c:v libx264 -preset veryfast -b:v 3000k \
+          -c:a aac -b:a 160k -ar 44100 \
+          -f flv "rtmp://a.rtmp.youtube.com/live2/$YT_KEY"
